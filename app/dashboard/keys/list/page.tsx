@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { useSidebar } from "../../layout";
 import {
   Key,
   Search,
@@ -28,7 +29,7 @@ import Loading from "@/app/loading"; // Import Loading component
 export default function KeysListPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { toggle: toggleSidebar, sidebarOpen, setSidebarOpen } = useSidebar();
   const [loading, setLoading] = useState(true);
   const [keys, setKeys] = useState<KeyItem[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -98,7 +99,7 @@ export default function KeysListPage() {
       <Header
         title="Lista de Licencas"
         description="Visualize todas as licencas do sistema"
-        onMenuClick={() => setSidebarOpen(!sidebarOpen)}
+         onMenuClick={toggleSidebar}
       />
 
       <main className="p-6">

@@ -1,10 +1,9 @@
 "use client";
 
-import { useSearchParams } from "next/navigation"
-
 import React from "react";
 import { useState, useEffect, useCallback } from "react";
 import { Header } from "@/components/dashboard/header";
+import { useSidebar } from "../layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -56,9 +55,8 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 
-
-export default function KeysPage() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+const KeysPage = () => {
+  const { toggle: toggleSidebar, sidebarOpen, setSidebarOpen } = useSidebar();
   const [loading, setLoading] = useState(true);
   const [keys, setKeys] = useState<KeyItem[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -332,43 +330,46 @@ export default function KeysPage() {
       <Header
         title="Licencas"
         description="Gerencie todas as licencas do sistema"
-        onMenuClick={() => setSidebarOpen(!sidebarOpen)}
+         onMenuClick={toggleSidebar}
       />
 
-      <main className="p-6">
+      <main className="p-4 lg:p-6">
         {/* Search and Filters */}
-        <Card className="mb-6 animate-slide-down">
-          <CardContent className="py-4">
-            <form onSubmit={handleSearch} className="flex gap-3">
+        <Card className="mb-4 lg:mb-6 animate-slide-down">
+          <CardContent className="py-3 lg:py-4">
+            <form onSubmit={handleSearch} className="flex flex-col gap-3 sm:flex-row">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   type="text"
-                  placeholder="Buscar por codigo, prefixo ou Discord ID..."
+                  placeholder="Buscar por codigo ou Discord ID..."
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                   className="pl-10"
                 />
               </div>
-              <Button type="submit" disabled={loading}>
-                Buscar
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setShowFilters(!showFilters)}
-                className="bg-transparent"
-              >
-                <Filter className="h-4 w-4" />
-              </Button>
-              <Button
-                type="button"
-                onClick={() => setCreateModalOpen(true)}
-                className="gap-2"
-              >
-                <Plus className="h-4 w-4" />
-                <span className="hidden sm:inline">Criar Keys</span>
-              </Button>
+              <div className="flex gap-2">
+                <Button type="submit" disabled={loading} className="flex-1 sm:flex-none">
+                  <Search className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Buscar</span>
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="bg-transparent"
+                >
+                  <Filter className="h-4 w-4" />
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => setCreateModalOpen(true)}
+                  className="flex-1 sm:flex-none"
+                >
+                  <Plus className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Criar Keys</span>
+                </Button>
+              </div>
             </form>
 
             {/* Filters */}
@@ -844,10 +845,12 @@ export default function KeysPage() {
       </Modal>
     </div>
   );
-}
+};
 
 function Loading() {
   return null;
 }
 
 export { Loading };
+
+export default KeysPage;

@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Modal, ModalHeader, ModalTitle, ModalDescription, ModalFooter } from "@/components/ui/modal";
 import { useToast } from "@/components/ui/toast-provider";
+import { useSidebar } from "../layout";
 import {
   Users,
   Search,
@@ -54,7 +55,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export default function UsersPage() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { toggle: toggleSidebar, sidebarOpen, setSidebarOpen } = useSidebar();
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState<UserItem[]>([]);
   const [page, setPage] = useState(1);
@@ -282,7 +283,7 @@ export default function UsersPage() {
       <Header
         title="Usuarios"
         description="Gerencie os usuarios vinculados ao sistema"
-        onMenuClick={() => setSidebarOpen(!sidebarOpen)}
+        onMenuClick={toggleSidebar}
       />
 
       <main className="p-6">

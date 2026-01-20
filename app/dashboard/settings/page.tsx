@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/toast-provider";
+import { useSidebar } from "../layout";
 import {
   Settings,
   AlertTriangle,
@@ -42,7 +43,7 @@ import {
 } from "@/lib/api";
 
 export default function SettingsPage() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { toggle: toggleSidebar, sidebarOpen, setSidebarOpen } = useSidebar();
   const [loading, setLoading] = useState(true);
   const [maintenanceLoading, setMaintenanceLoading] = useState(false);
   const [settings, setSettings] = useState<SettingsData | null>(null);
@@ -251,7 +252,7 @@ export default function SettingsPage() {
       <Header
         title="Configuracoes"
         description="Gerencie as configuracoes do sistema, seguranca e webhooks"
-        onMenuClick={() => setSidebarOpen(!sidebarOpen)}
+        onMenuClick={toggleSidebar}
         isMaintenanceMode={isMaintenanceEnabled}
       />
 

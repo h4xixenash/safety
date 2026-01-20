@@ -6,6 +6,7 @@ import { Header } from "@/components/dashboard/header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useSidebar } from "../layout";
 import {
   FileText,
   Search,
@@ -34,7 +35,7 @@ function safeDateString(v: unknown) {
 }
 
 export default function AuditLogsPage() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { toggle: toggleSidebar, sidebarOpen, setSidebarOpen } = useSidebar();
   const [loading, setLoading] = useState(true);
   const [logs, setLogs] = useState<AuditLogItem[]>([]);
   const [page, setPage] = useState(1);
@@ -127,7 +128,7 @@ export default function AuditLogsPage() {
       <Header
         title="Audit Logs"
         description="Historico de eventos e acoes do sistema"
-        onMenuClick={() => setSidebarOpen(!sidebarOpen)}
+         onMenuClick={toggleSidebar}
       />
 
       <main className="p-6">

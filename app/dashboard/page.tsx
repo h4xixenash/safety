@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { Header } from "@/components/dashboard/header";
+import { useSidebar } from "./layout";
 import { StatsCard } from "@/components/ui/stats-card";
 import {
   Key,
@@ -38,8 +39,8 @@ interface ActionAlert {
   description?: string;
 }
 
-// Map API events to AuditAction types
-function mapEventToAction(event: string): AuditAction {
+// Map API events to AuditAction types based on event name and level
+function mapEventToAction(event: string, level: string): AuditAction {
   const eventMap: Record<string, AuditAction> = {
     "key.reset_hwid": "reset_hwid",
     "key.unlink": "unlink",
@@ -65,31 +66,46 @@ function mapEventToAction(event: string): AuditAction {
   // Try direct match
   if (eventMap[event]) return eventMap[event];
   
-  // Try partial match
+  // Try partial match based on event name
   const lowerEvent = event.toLowerCase();
-  if (lowerEvent.includes("hwid") || lowerEvent.includes("reset")) return "reset_hwid";
+  if (lowerEvent.includes("hwid") && lowerEvent.includes("reset")) return "reset_hwid";
   if (lowerEvent.includes("unlink")) return "unlink";
   if (lowerEvent.includes("add") && lowerEvent.includes("day")) return "add_days";
+  if (lowerEvent.includes("remove") && lowerEvent.includes("day")) return "remove_days";
+  if (lowerEvent.includes("unpause")) return "unpause";
   if (lowerEvent.includes("pause")) return "pause";
+  if (lowerEvent.includes("unban")) return "unban";
   if (lowerEvent.includes("ban")) return "ban";
-  if (lowerEvent.includes("maintenance")) return "maintenance_on";
+  if (lowerEvent.includes("maintenance")) return level === "INFO" ? "maintenance_off" : "maintenance_on";
+  if (lowerEvent.includes("bulk") && lowerEvent.includes("reset")) return "bulk_reset";
+  if (lowerEvent.includes("bulk") && lowerEvent.includes("pause")) return "bulk_pause";
   
-  return "reset_hwid"; // Default fallback
+  // Use level to determine a sensible default
+  if (level === "ERROR") return "ban"; // Show errors as red/ban style
+  if (level === "WARN") return "pause"; // Show warnings as yellow/pause style
+  
+  return "reset_hwid"; // Default fallback for INFO
 }
 
 // Transform API audit log to component format
 function transformAuditLog(item: AuditLogItem): AuditLogEntry {
+  // Use the message directly as details since it contains the actual action description
+  const details = item.message || undefined;
+  
+  // Use key or discord ID as target
+  const target = item.keyMasked || item.discordIdMasked || undefined;
+  
   return {
     id: item._id,
-    action: mapEventToAction(item.event),
-    target: item.keyMasked || item.discordIdMasked || undefined,
-    details: item.message || undefined,
+    action: mapEventToAction(item.event, item.level),
+    target,
+    details,
     timestamp: new Date(item.createdAt),
   };
 }
 
 export default function DashboardOverview() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { toggle: toggleSidebar, sidebarOpen, setSidebarOpen } = useSidebar(); 
   const [data, setData] = useState<ExtendedStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [alerts, setAlerts] = useState<ActionAlert[]>([]);
@@ -167,12 +183,12 @@ export default function DashboardOverview() {
       <Header
         title="Dashboard"
         description="Visao geral do sistema"
-        onMenuClick={() => setSidebarOpen(!sidebarOpen)}
+        onMenuClick={toggleSidebar}
       />
 
-      <main className="p-6">
+      <main className="p-4 lg:p-6">
         {/* Primary Stats Grid */}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:gap-6 grid-cols-2 lg:grid-cols-4">
           <StatsCard
             title="Total de Licencas"
             value={loading ? "-" : data?.keys ?? 0}
@@ -205,7 +221,7 @@ export default function DashboardOverview() {
         </div>
 
         {/* Secondary Stats Grid */}
-        <div className="mt-6 grid gap-6 sm:grid-cols-3">
+        <div className="mt-4 lg:mt-6 grid gap-4 sm:gap-6 grid-cols-3">
           <StatsCard
             title="Keys Banidas"
             value={loading ? "-" : data?.bannedKeys ?? 0}
@@ -231,19 +247,19 @@ export default function DashboardOverview() {
         </div>
 
         {/* Activity Section */}
-        <div className="mt-8 grid gap-6 lg:grid-cols-2">
+        <div className="mt-6 lg:mt-8 grid gap-4 lg:gap-6 lg:grid-cols-2">
           {/* Audit Log */}
           <div
-            className="rounded-xl border border-border bg-card p-6 animate-slide-up opacity-0 stagger-4"
+            className="rounded-xl border border-border bg-card p-4 lg:p-6 animate-slide-up opacity-0 stagger-4"
             style={{ animationFillMode: "forwards" }}
           >
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h3 className="flex items-center gap-2 text-lg font-semibold">
+                <h3 className="flex items-center gap-2 text-base lg:text-lg font-semibold">
                   <ShieldAlert className="h-5 w-5 text-muted-foreground" />
                   Audit Log
                 </h3>
-                <p className="mt-1 text-sm text-muted-foreground">
+                <p className="mt-1 text-xs lg:text-sm text-muted-foreground">
                   Atividades recentes em tempo real
                 </p>
               </div>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Header } from "@/components/dashboard/header";
+import { useSidebar } from "../layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,7 +32,7 @@ interface BulkAction {
 }
 
 export default function BulkActionsPage() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+ const { toggle: toggleSidebar, sidebarOpen, setSidebarOpen } = useSidebar();
   const [loading, setLoading] = useState<string | null>(null);
   const [showPauseModal, setShowPauseModal] = useState(false);
   const [showResumeModal, setShowResumeModal] = useState(false);
@@ -137,7 +138,7 @@ export default function BulkActionsPage() {
       <Header
         title="Ações em Massa"
         description="Execute operações em todas as keys ativas"
-        onMenuClick={() => setSidebarOpen(!sidebarOpen)}
+        onMenuClick={toggleSidebar}
       />
 
       <main className="p-6">

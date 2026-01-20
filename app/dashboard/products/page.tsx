@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Modal, ModalHeader, ModalTitle, ModalDescription, ModalFooter } from "@/components/ui/modal";
 import { useToast } from "@/components/ui/toast-provider";
+import { useSidebar } from "../layout";
 import {
   Package,
   Search,
@@ -44,7 +45,7 @@ interface ProductWithHwid extends Product {
 }
 
 export default function ProductsPage() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { toggle: toggleSidebar, sidebarOpen, setSidebarOpen } = useSidebar();
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState<ProductWithHwid[]>([]);
   const [page, setPage] = useState(1);
@@ -178,7 +179,7 @@ export default function ProductsPage() {
       <Header
         title="Produtos"
         description="Gerencie os produtos do sistema"
-        onMenuClick={() => setSidebarOpen(!sidebarOpen)}
+         onMenuClick={toggleSidebar}
       />
 
       <main className="p-6">
