@@ -144,7 +144,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               Sistema Operacional
             </div>
             <p className="mt-1 text-xs text-sidebar-foreground/50">
-             Safety API | by nash
+             @Safety API | by nash
             </p>
           </div>
           <Button

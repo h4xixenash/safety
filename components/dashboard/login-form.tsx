@@ -81,7 +81,7 @@ export function LoginForm() {
                 </button>
               </div>
               <p className="text-xs text-muted-foreground">
-                Safety API | by nash
+                @Safety API | by nash
               </p>
             </div>
 
